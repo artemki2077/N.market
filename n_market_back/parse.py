@@ -30,9 +30,11 @@ class WishMaster:
                 for li in i.find_all('li'):
                     key, value = li.text.strip('\n').split('\n')
                     info[key.strip()] = value.strip()
+                div_link = i.find('a').get('href')
                 phones.append({
                     'name': name,
                     'price': price,
+                    'link': 'https://wishmaster.me/' + div_link,
                     'company': company,
                     'info': info
                 })
