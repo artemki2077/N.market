@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup as bs4
 import multiprocessing
 import json
+from replit import db
 
 
 class WishMaster:
@@ -34,23 +35,33 @@ class WishMaster:
                 phones.append({
                     'name': name,
                     'price': price,
-                    'link': 'https://wishmaster.me/' + div_link,
+                    'link': 'https://wishmaster.me' + div_link,
                     'company': company,
+                    'shop': 'WishMaster',
                     'info': info
                 })
             except BaseException as e:
                 print(f'error, page: {n}, model: "{company} {name}": {e}')
         return phones
-
-    def update(self):
+    
+    def get_phones(self):
         phones = []
         phones_pages = self.get_html('https://wishmaster.me/catalog/smartfony/')
         count_pages = int(phones_pages.find('span', {"class": "nums"}).find_all('a')[-1].text)
         with multiprocessing.Pool(53) as p:
-            for i in p.map(self.get_phones_pages, list(range(1, count_pages+1))):
+            for i in p.map(self.get_phones_pages, list(range(1, count_pages + 1))):
                 phones += i
-        json.dump(phones, open('test.json', 'w', encoding='utf8'), indent=4, ensure_ascii=False)
+        return phones
 
+    def update(self):
+        result = {'phones': self.get_phones()}
+        # json.dump(phones, open('test.json', 'w', encoding='utf8'), indent=4, ensure_ascii=False)
+        return result
+
+def update():
+    result = WishMaster().update()
+    db['phones'] = result['phones']
+    
 
 if __name__ == '__main__':
-    WishMaster().update()
+    update()

@@ -1,21 +1,50 @@
 from typing import Union
 from fastapi import FastAPI
+import parser
 import uvicorn
+from threading import Thread
+from time import sleep
+from replit import db
+import parse
 
 app = FastAPI()
+types = ['phones']
+all_products = {
+    'phones': []
+}
 
-@app.get("/")
-def read_root():
-    return 'lol'
-	
+
 @app.get("/update")
-def read_root():
+def update():
+    try:
+        parse.update()
+        print('start updating...')
+    except BaseException as e:
+        return {'result': False, 'answer': f'{e}'}
+    return {'result': True, 'answer': 'START UPDATEING...'}
+
+
+@app.get('/get_db')
+def get_db():
+    try:
+        all_products = {
+            'phones': []
+        }
+        for tipe in all_products:
+            all_products[tipe].extend(db.get(tipe, []))
+    except BaseException as e:
+        return {'result': False, 'answer': f'{e}'}
+    print(all_products)
+    return {'result': True, 'answer': 'SUCCESS', 'products': all_products}
+
+
+@app.get("/search")
+def search(company=None, name=None, price_from=None, price_to=None, type=''):
     return {"Hello": "World"}
 
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/")
+def home():
+    return {"artem": "krut"}
 
 
 if __name__ == "__main__":
