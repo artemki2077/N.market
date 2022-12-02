@@ -2,6 +2,7 @@ import 'Pages/mainPage.dart';
 import 'Pages/searchPage.dart';
 import 'Pages/basketPage.dart';
 import 'package:flutter/material.dart';
+import 'global.dart' as globals;
 
 class Home extends StatefulWidget {
   final String way;
@@ -12,9 +13,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
-
-
   late int _selectedPage = 0;
 
 
@@ -58,7 +56,7 @@ class _HomeState extends State<Home> {
           ),
         ),
       ),
-      body: [MainPage(), const SearchPage(), const BasketPage()].elementAt(_selectedPage),
+      body: [MainPage(),  SearchPage(), const BasketPage()].elementAt(_selectedPage),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
         items: const <BottomNavigationBarItem>[
