@@ -1,60 +1,81 @@
+// ignore: file_names
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import '../global.dart' as globals;
 
 class MainPage extends StatelessWidget {
-
-
-  List<String> srcs_1 = <String>[
-    'https://e-katalogru.ru/jpg/jpg_katalog/wide/157.jpg',
-    'https://e-katalogru.ru/jpg/jpg_katalog/wide/41.jpg',
-    'https://e-katalogru.ru/jpg/jpg_katalog/wide/447.jpg'
-  ];
-  List<String> srcs_2 = <String>[
-    'https://e-katalogru.ru/images/2110851.jpg',
-    'https://e-katalogru.ru/images/2104766.jpg',
-    'https://e-katalogru.ru/images/1809718.jpg'
-  ];
-  Map structer = {
+  Map<String, List> structer = <String, List>{
     'main': [
+      {
+        'img_src': 'https://e-katalogru.ru/jpg/jpg_katalog/wide/447.jpg',
+        'href': 'search/smartfony/'
+      },
       {
         'img_src': 'https://e-katalogru.ru/jpg/jpg_katalog/wide/157.jpg',
         'href': 'search/televizory/monitory'
       },
       {
         'img_src': 'https://e-katalogru.ru/jpg/jpg_katalog/wide/41.jpg',
-        'href': 'search/audio/portativnaya_akustika/'
+        'href': 'search/audio/'
       },
-      {
-        'img_src': 'https://e-katalogru.ru/jpg/jpg_katalog/wide/447.jpg',
-        'href': 'search/audio/portativnaya_akustika/'
-      }
+      
     ],
     'Популярные модели': [
       {
-        'img_src': 'https://e-katalogru.ru/images/2110851.jpg',
-        'href': 'search/televizory/monitory'
+        'img_src': 'https://wishmaster.me/upload/iblock/dbf/dbf905b206817c1f89f977cce2c2fb95.jpeg',
+        'href': 'televizory/monitory'
       },
       {
-        'img_src': 'https://e-katalogru.ru/images/2104766.jpg',
-        'href': 'search/audio/portativnaya_akustika/'
+        'img_src': 'https://e-katalogru.ru/images/2110851.jpg',
+        'href': 'televizory/monitory'
+      },
+      {
+        'img_src': 'https://wishmaster.me/upload/iblock/00d/00dbf67b836706b6899f1f3923a3ee29.png',
+        'href': 'audio/portativnaya_akustika/'
+      },
+    ],
+    'Новинки': [
+      {
+        'img_src': 'https://wishmaster.me/upload/iblock/53a/53a6028a07d62e1a0d2987d74071fea0.jpg',
+        'href': 'televizory/monitory'
+      },
+      {
+        'img_src': 'https://wishmaster.me/upload/iblock/475/475183b64d02990c212034589b3b4006.jpeg',
+        'href': 'audio/portativnaya_akustika/'
       },
       {
         'img_src': 'https://e-katalogru.ru/images/1809718.jpg',
-        'href': 'search/audio/portativnaya_akustika/'
+        'href': 'audio/portativnaya_akustika/'
       }
     ],
+    'История': globals.Lasts,
   };
+  Widget getListBlock(context, name){
+    return SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: 150,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: structer[name]!.length,
+              itemBuilder: (context, index) => Container(
+                margin: EdgeInsets.zero,
+                padding: const EdgeInsets.all(20),
+                width: MediaQuery.of(context).size.width / 2,
+                child: Image.network(structer[name]!.elementAt(index)['img_src']),
+              ),
+            ),
+          );
+  }
+
   int index_1 = 0;
-  int block_1_offset = 0;
   var screenWidth =
       (window.physicalSize.shortestSide / window.devicePixelRatio);
   var screenHeight =
       (window.physicalSize.longestSide / window.devicePixelRatio);
-  late final ScrollController _controller = ScrollController(initialScrollOffset: srcs_1.length % 2 == 1 ? ((screenWidth / 2) * srcs_1.length) - screenWidth / 2: (screenWidth / 2) * srcs_1.length);
+  late final ScrollController _controller = ScrollController(initialScrollOffset: structer['main']!.length % 2 == 1 ? ((screenWidth / 2) * structer['main']!.length) - screenWidth / 2: (screenWidth / 2) * structer['main']!.length);
   List<Widget> bulderSmollReact() {
     List<Widget> rtr = [];
-    for (var i = 0; i < srcs_1.length; i++) {
+    for (var i = 0; i < structer['main']!.length; i++) {
       rtr.add(
         Container(
           color: i == index_1 ? Colors.deepPurple : Colors.black38,
@@ -69,7 +90,7 @@ class MainPage extends StatelessWidget {
 
   @override
   StatelessElement createElement() {
-    index_1 = srcs_1.length ~/ 2;
+    index_1 = structer['main']!.length ~/ 2;
     return super.createElement();
   }
 
@@ -84,9 +105,9 @@ class MainPage extends StatelessWidget {
             child: NotificationListener(
               onNotification: (notification) {
                 if (notification is ScrollNotification) {
-                  block_1_offset = (notification.metrics.pixels + (screenWidth ~/ 2))  ~/ screenWidth;
-                  if (block_1_offset != index_1) {
-                    index_1 = block_1_offset;
+                  var block1Offset = (notification.metrics.pixels + (screenWidth ~/ 2))  ~/ screenWidth;
+                  if (block1Offset != index_1) {
+                    index_1 = block1Offset;
                     (context as Element).markNeedsBuild();
                   }
 
@@ -95,16 +116,22 @@ class MainPage extends StatelessWidget {
               },
               child: ListView.builder(
                 controller: _controller,
-                itemCount: srcs_1.length,
+                itemCount: structer['main']?.length,
                 scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index) => Container(
-                  margin: EdgeInsets.zero,
-                  padding: const EdgeInsets.all(20),
-                  width: MediaQuery.of(context).size.width,
-                  child: Image.network(
-                    srcs_1.elementAt(index),
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height / 5,
+                itemBuilder: (context, index) => GestureDetector(
+                  onTap: () => Navigator.pushNamed(context, '/search', arguments: {'prod': structer['main']?.elementAt(index)['href']}),
+                  child: Container(
+                    margin: EdgeInsets.zero,
+                    padding: const EdgeInsets.all(20),
+                    width: MediaQuery.of(context).size.width * (structer['main']?.elementAt(index)['size'] ?? 1),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(0.5),
+                      child: Image.network(
+                        structer['main']?.elementAt(index)['img_src'],
+                        width: MediaQuery.of(context).size.width * (structer['main']?.elementAt(index)['size'] ?? 1),
+                        height: MediaQuery.of(context).size.height / 5,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -127,20 +154,32 @@ class MainPage extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: 150,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: srcs_2.length,
-              itemBuilder: (context, index) => Container(
-                margin: EdgeInsets.zero,
-                padding: const EdgeInsets.all(20),
-                width: MediaQuery.of(context).size.width / 2,
-                child: Image.network(srcs_2.elementAt(index)),
+          getListBlock(context, 'Популярные модели'),
+          Container(
+            padding: const EdgeInsets.only(left: 20),
+            child: const Text(
+              'Новинки',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black38,
               ),
             ),
-          )
+          ),
+          getListBlock(context, 'Новинки'),
+          Container(
+            padding: const EdgeInsets.only(left: 20),
+            child: const Text(
+              'История',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black38,
+              ),
+            ),
+          ),
+          getListBlock(context, 'История'),
+          
         ],
       ),
     );
