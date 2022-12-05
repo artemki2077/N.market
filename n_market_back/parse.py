@@ -32,12 +32,14 @@ class WishMaster:
                     key, value = li.text.strip('\n').split('\n')
                     info[key.strip()] = value.strip()
                 div_link = i.find('a').get('href')
+                img_src = i.find('img').get('src')
                 phones.append({
+                    'company': company,
                     'name': name,
                     'price': price,
                     'link': 'https://wishmaster.me' + div_link,
-                    'company': company,
                     'shop': 'WishMaster',
+                    'img_src': 'https://wishmaster.me' + img_src,
                     'info': info
                 })
             except BaseException as e:
@@ -48,14 +50,14 @@ class WishMaster:
         phones = []
         phones_pages = self.get_html('https://wishmaster.me/catalog/smartfony/')
         count_pages = int(phones_pages.find('span', {"class": "nums"}).find_all('a')[-1].text)
-        with multiprocessing.Pool(53) as p:
+        with multiprocessing.Pool(5) as p:
             for i in p.map(self.get_phones_pages, list(range(1, count_pages + 1))):
                 phones += i
         return phones
 
     def update(self):
         result = {'phones': self.get_phones()}
-        # json.dump(phones, open('test.json', 'w', encoding='utf8'), indent=4, ensure_ascii=False)
+        json.dump(result, open('test.json', 'w', encoding='utf8'), indent=4, ensure_ascii=False)
         return result
 
 def update():
