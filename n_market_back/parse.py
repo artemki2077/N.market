@@ -4,6 +4,8 @@ import multiprocessing
 import json
 from replit import db
 
+count_process = 9
+
 
 class WishMaster:
     def __init__(self):
@@ -13,9 +15,10 @@ class WishMaster:
         respons = requests.get(url)
         return bs4(respons.text, 'html.parser')
 
-    def get_phones_pages(self, n):
+    def get_pages(self, args):
+        n, link = args
         phones = []
-        phones_pages = self.get_html(f'https://wishmaster.me/catalog/smartfony/?PAGEN_2={n}')
+        phones_pages = self.get_html(f'{link}?PAGEN_2={n}')
         phones_element = phones_pages.find_all('div', {'class': 'product-card'})
         company = ''
         name = ''
@@ -45,25 +48,47 @@ class WishMaster:
             except BaseException as e:
                 print(f'error, page: {n}, model: "{company} {name}": {e}')
         return phones
-    
+
+    def get_all_from(self, link='https://wishmaster.me/catalog/smartfony/'):
+        product = []
+        product_pages = self.get_html(f'{link}')
+        count_pages = int(product_pages.find('span', {"class": "nums"}).find_all('a')[-1].text)
+        with multiprocessing.Pool(count_process) as p:
+            for i in p.map(self.get_pages, list(map(lambda x: [x, link], list(range(1, count_pages + 1))))):
+                product += i
+        return product
+
     def get_phones(self):
         phones = []
         phones_pages = self.get_html('https://wishmaster.me/catalog/smartfony/')
         count_pages = int(phones_pages.find('span', {"class": "nums"}).find_all('a')[-1].text)
-        with multiprocessing.Pool(5) as p:
-            for i in p.map(self.get_phones_pages, list(range(1, count_pages + 1))):
+        with multiprocessing.Pool(count_process) as p:
+            for i in p.map(self.get_pages, list(map(lambda x: [x, ], list(range(1, count_pages + 1))))):
                 phones += i
         return phones
 
+    def get_monitory(self):
+        monitory = []
+        monitory_pages = self.get_html('https://wishmaster.me/catalog/smartfony/')
+        count_pages = int(monitory_pages.find('span', {"class": "nums"}).find_all('a')[-1].text)
+        with multiprocessing.Pool(count_process) as p:
+            for i in p.map(self.get_pages, list(range(1, count_pages + 1))):
+                monitory += i
+        return monitory
+
     def update(self):
-        result = {'phones': self.get_phones()}
+
+        result = {'phones': self.get_all_from('https://wishmaster.me/catalog/smartfony/'), 'monitory': self.get_all_from('https://wishmaster.me/catalog/televizory_monitory/monitory/')}
         json.dump(result, open('test.json', 'w', encoding='utf8'), indent=4, ensure_ascii=False)
         return result
 
+
 def update():
     result = WishMaster().update()
-    db['phones'] = result['phones']
-    
+    print(result)
+    for i in result:
+        db[i] = result[i]
+
 
 if __name__ == '__main__':
     update()
