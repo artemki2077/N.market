@@ -2,50 +2,60 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../global.dart' as globals;
+import 'products.dart';
 
 class MainPage extends StatelessWidget {
   Map<String, List> structer = <String, List>{
     'main': [
       {
         'img_src': 'https://e-katalogru.ru/jpg/jpg_katalog/wide/447.jpg',
-        'href': 'search/smartfony/'
+        'href': 'phones',
+        'prod': false
       },
       {
         'img_src': 'https://e-katalogru.ru/jpg/jpg_katalog/wide/157.jpg',
-        'href': 'search/televizory/monitory'
+        'href': 'monitory',
+        'prod': false
       },
       {
         'img_src': 'https://e-katalogru.ru/jpg/jpg_katalog/wide/41.jpg',
-        'href': 'search/audio/'
+        'href': 'audio',
+        'prod': false
       },
       
     ],
     'Популярные модели': [
       {
         'img_src': 'https://wishmaster.me/upload/iblock/dbf/dbf905b206817c1f89f977cce2c2fb95.jpeg',
-        'href': 'televizory/monitory'
+        'href': 'televizory/monitory',
+        'prod': true
       },
       {
         'img_src': 'https://e-katalogru.ru/images/2110851.jpg',
-        'href': 'televizory/monitory'
+        'href': 'televizory/monitory',
+        'prod': true
       },
       {
         'img_src': 'https://wishmaster.me/upload/iblock/00d/00dbf67b836706b6899f1f3923a3ee29.png',
-        'href': 'audio/portativnaya_akustika/'
+        'href': 'audio/portativnaya_akustika/',
+        'prod': true
       },
     ],
     'Новинки': [
       {
         'img_src': 'https://wishmaster.me/upload/iblock/53a/53a6028a07d62e1a0d2987d74071fea0.jpg',
-        'href': 'televizory/monitory'
+        'href': 'televizory/monitory',
+        'prod': true
       },
       {
         'img_src': 'https://wishmaster.me/upload/iblock/475/475183b64d02990c212034589b3b4006.jpeg',
-        'href': 'audio/portativnaya_akustika/'
+        'href': 'audio/portativnaya_akustika/',
+        'prod': true
       },
       {
         'img_src': 'https://e-katalogru.ru/images/1809718.jpg',
-        'href': 'audio/portativnaya_akustika/'
+        'href': 'audio/portativnaya_akustika/',
+        'prod': true
       }
     ],
     'История': globals.Lasts,
@@ -119,7 +129,17 @@ class MainPage extends StatelessWidget {
                 itemCount: structer['main']?.length,
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (context, index) => GestureDetector(
-                  onTap: () => Navigator.pushNamed(context, '/search', arguments: {'prod': structer['main']?.elementAt(index)['href']}),
+                  onTap: () {
+                    Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => Products('',
+                          search: false,
+                          types: structer['main']![index]['href'],
+                          name: '',
+                          company: ''),
+                    ),
+                  );
+                  },
                   child: Container(
                     margin: EdgeInsets.zero,
                     padding: const EdgeInsets.all(20),
