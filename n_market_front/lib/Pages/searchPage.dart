@@ -17,8 +17,20 @@ class SearchPage extends StatelessWidget {
             if (index == 0) {
               return Container(
                 padding: const EdgeInsets.symmetric(horizontal: 5),
-                child: const TextField(
-                  decoration: InputDecoration(
+                child: TextField(
+                  onSubmitted: (value) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => Products(
+                            s: value,
+                            search: false,
+                            types: '',
+                            name: '',
+                            company: ''),
+                      ),
+                    );
+                  },
+                  decoration: const InputDecoration(
                     contentPadding: EdgeInsets.symmetric(vertical: 3.0),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(30))),
@@ -32,7 +44,7 @@ class SearchPage extends StatelessWidget {
               onTap: () => {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => Products('',
+                    builder: (context) => Products(
                         search: false,
                         types: types[index - 1]['type']!.toString(),
                         name: '',
