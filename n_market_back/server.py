@@ -7,9 +7,10 @@ from replit import db
 import parse
 
 app = FastAPI()
-types = ['phones']
+types = ['phones', 'monitory']
 all_products = {
-    'phones': []
+    'phones': [],
+    'monitory': []
 }
 def similarity(s1, s2):
   normalized1 = s1.lower()
@@ -25,9 +26,9 @@ async def update():
         print('start updating...')
         rst = await run_in_threadpool(parse.update)
         print('finished updating!')
-        all_products = {
-            'phones': []
-        }
+        all_products = {}
+        for i in types:
+            all_products[i] = []
         for tipe in all_products:
             all_products[tipe].extend(db.get(tipe, []))
     except BaseException as e:
@@ -45,12 +46,32 @@ def get_db(type=None, sorting='price'):
 
 
 @app.get("/search")
-def search(company=None, name='', price_from=None, price_to=None, type=None, sorting='price', count=10):
+def search(company=None, name='', price_from=None, price_to=None, type=None, sorting='price', count=25):
     global all_products
     try:
+        print()
+        if not price_from:
+            price_from = 0
+        else:
+            price_from = int(price_from)
+        if not price_to:
+            price_to = 999999999999999999999999999999
+        else:
+            price_to = int(price_to)
+        if not company:
+            company = None
+            
         rtn = []
         if type:
-            return {'result': True, 'answer': 'SUCCESS', 'products': sorted(all_products.get(type, []), key=lambda x: similarity(x['name'], name))[::-1][:count]}
+            rtn = sorted(all_products.get(type, []), key=lambda x: similarity(x['name'], name))[::-1][:count]
+            
+        else:
+            for type in all_products:
+                rtn.extend(sorted(all_products.get(type, []), key = lambda x: x[sorting]))
+        print(price_from, price_to, company, type)
+        rtn = list(filter(lambda x: price_from <= x['price'] <= price_to and (True if not company else x['company'] == company), rtn))
+        print(rtn)
+        return {'result': True, 'answer': 'SUCCESS', 'products': rtn}
     except BaseException as e:
         return {'result': False, 'answer': f'{e}'}
 
@@ -61,9 +82,9 @@ def home():
 
 def runing():
     global all_products
-    all_products = {
-        'phones': []
-    }
+    all_products = {}
+    for i in types:
+        all_products[i] = []
     for tipe in all_products:
         all_products[tipe].extend(db.get(tipe, []))
 
