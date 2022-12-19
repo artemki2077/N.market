@@ -10,8 +10,10 @@ class Products extends StatefulWidget {
   final String types;
   final String name;
   final String company;
-  const Products(String s,
+  final String s;
+  const Products(
       {Key? key,
+      this.s = '',
       this.title = 'N Market',
       this.search = true,
       this.types = '',
@@ -66,6 +68,7 @@ class _ProductsState extends State<Products> {
   }
 
   void search() async {
+    print(nameSearch);
     var url = Uri.https('nmarket.artemki2077.repl.co', 'search', {
       'type': widget.types,
       'name': nameSearch,
@@ -95,7 +98,7 @@ class _ProductsState extends State<Products> {
 
   Widget inputer(context, name) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       height: MediaQuery.of(context).size.height / 20,
       width: MediaQuery.of(context).size.width / 2,
       child: TextField(
@@ -129,6 +132,7 @@ class _ProductsState extends State<Products> {
 
   @override
   void initState() {
+    nameSearch = widget.s;
     search();
     _controller = TextEditingController();
     filter_controlers.forEach((key, value) {

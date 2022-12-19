@@ -27,34 +27,34 @@ class MainPage extends StatelessWidget {
     'Популярные модели': [
       {
         'img_src': 'https://wishmaster.me/upload/iblock/dbf/dbf905b206817c1f89f977cce2c2fb95.jpeg',
-        'href': 'televizory/monitory',
+        'href': 'monitory',
         'prod': true
       },
       {
         'img_src': 'https://e-katalogru.ru/images/2110851.jpg',
-        'href': 'televizory/monitory',
+        'href': 'monitory',
         'prod': true
       },
       {
         'img_src': 'https://wishmaster.me/upload/iblock/00d/00dbf67b836706b6899f1f3923a3ee29.png',
-        'href': 'audio/portativnaya_akustika/',
+        'href': 'audio',
         'prod': true
       },
     ],
     'Новинки': [
       {
         'img_src': 'https://wishmaster.me/upload/iblock/53a/53a6028a07d62e1a0d2987d74071fea0.jpg',
-        'href': 'televizory/monitory',
+        'href': 'monitory',
         'prod': true
       },
       {
         'img_src': 'https://wishmaster.me/upload/iblock/475/475183b64d02990c212034589b3b4006.jpeg',
-        'href': 'audio/portativnaya_akustika/',
+        'href': 'portativnaya_akustika/',
         'prod': true
       },
       {
         'img_src': 'https://e-katalogru.ru/images/1809718.jpg',
-        'href': 'audio/portativnaya_akustika/',
+        'href': 'portativnaya_akustika/',
         'prod': true
       }
     ],
@@ -67,16 +67,28 @@ class MainPage extends StatelessWidget {
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: structer[name]!.length,
-              itemBuilder: (context, index) => Container(
-                margin: EdgeInsets.zero,
-                padding: const EdgeInsets.all(20),
-                width: MediaQuery.of(context).size.width / 2,
-                child: Image.network(structer[name]!.elementAt(index)['img_src']),
+              itemBuilder: (context, index) => GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => Products(
+                          search: false,
+                          types: structer[name]![index]['href'],
+                          name: '',
+                          company: ''),
+                    ),
+                  );
+                },
+                child: Container(
+                  margin: EdgeInsets.zero,
+                  padding: const EdgeInsets.all(20),
+                  width: MediaQuery.of(context).size.width / 2,
+                  child: Image.network(structer[name]!.elementAt(index)['img_src']),
+                ),
               ),
             ),
           );
   }
-
   int index_1 = 0;
   var screenWidth =
       (window.physicalSize.shortestSide / window.devicePixelRatio);
@@ -132,7 +144,7 @@ class MainPage extends StatelessWidget {
                   onTap: () {
                     Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => Products('',
+                      builder: (context) => Products(
                           search: false,
                           types: structer['main']![index]['href'],
                           name: '',
