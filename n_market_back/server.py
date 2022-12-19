@@ -7,10 +7,12 @@ from replit import db
 import parse
 
 app = FastAPI()
-types = ['phones', 'monitory']
+types = ['phones', 'monitory', 'audio', 'laptop']
 all_products = {
     'phones': [],
-    'monitory': []
+    'monitory': [],
+    'audio': [],
+    'laptop': []
 }
 def similarity(s1, s2):
   normalized1 = s1.lower()
@@ -67,17 +69,17 @@ def search(company=None, name='', price_from=None, price_to=None, type=None, sor
             
         else:
             for type in all_products:
-                rtn.extend(sorted(all_products.get(type, []), key = lambda x: x[sorting]))
-        print(price_from, price_to, company, type)
+                rtn.extend(all_products.get(type, []))
+            rtn.sort(key=lambda x: similarity(x['name'], name), reverse=True)
+        print(price_from, price_to, company, type, name)
         rtn = list(filter(lambda x: price_from <= x['price'] <= price_to and (True if not company else x['company'] == company), rtn))
-        print(rtn)
         return {'result': True, 'answer': 'SUCCESS', 'products': rtn}
     except BaseException as e:
         return {'result': False, 'answer': f'{e}'}
 
 @app.get("/")
 def home():
-    return {"artem": "krut"}
+    return {"NIKITA": "krut"}
 
 
 def runing():

@@ -4,10 +4,11 @@ import multiprocessing
 import json
 from replit import db
 
-count_process = 9
+count_process = 13
 
 
 class WishMaster:
+
     def __init__(self):
         pass
 
@@ -19,7 +20,8 @@ class WishMaster:
         n, link = args
         phones = []
         phones_pages = self.get_html(f'{link}?PAGEN_2={n}')
-        phones_element = phones_pages.find_all('div', {'class': 'product-card'})
+        phones_element = phones_pages.find_all('div',
+                                               {'class': 'product-card'})
         company = ''
         name = ''
         for i in phones_element:
@@ -27,7 +29,9 @@ class WishMaster:
                 company, *name = i.find('h3').text[8:].strip().split(' ')
                 name = ' '.join(name).split('(')[0]
 
-                price = i.find('span', {'class': 'product-card__content-price-actual'}).text.strip('\n')[5:]
+                price = i.find('span', {
+                    'class': 'product-card__content-price-actual'
+                }).text.strip('\n')[5:]
                 price = int(''.join(price.split()[:-1]))
 
                 info = {}
@@ -52,25 +56,44 @@ class WishMaster:
     def get_all_from(self, link='https://wishmaster.me/catalog/smartfony/'):
         product = []
         product_pages = self.get_html(f'{link}')
-        count_pages = int(product_pages.find('span', {"class": "nums"}).find_all('a')[-1].text)
+        count_pages = int(
+            product_pages.find('span', {
+                "class": "nums"
+            }).find_all('a')[-1].text)
         with multiprocessing.Pool(count_process) as p:
-            for i in p.map(self.get_pages, list(map(lambda x: [x, link], list(range(1, count_pages + 1))))):
+            for i in p.map(
+                    self.get_pages,
+                    list(
+                        map(lambda x: [x, link],
+                            list(range(1, count_pages + 1))))):
                 product += i
         return product
 
     def get_phones(self):
         phones = []
-        phones_pages = self.get_html('https://wishmaster.me/catalog/smartfony/')
-        count_pages = int(phones_pages.find('span', {"class": "nums"}).find_all('a')[-1].text)
+        phones_pages = self.get_html(
+            'https://wishmaster.me/catalog/smartfony/')
+        count_pages = int(
+            phones_pages.find('span', {
+                "class": "nums"
+            }).find_all('a')[-1].text)
         with multiprocessing.Pool(count_process) as p:
-            for i in p.map(self.get_pages, list(map(lambda x: [x, ], list(range(1, count_pages + 1))))):
+            for i in p.map(
+                    self.get_pages,
+                    list(map(lambda x: [
+                        x,
+                    ], list(range(1, count_pages + 1))))):
                 phones += i
         return phones
 
     def get_monitory(self):
         monitory = []
-        monitory_pages = self.get_html('https://wishmaster.me/catalog/smartfony/')
-        count_pages = int(monitory_pages.find('span', {"class": "nums"}).find_all('a')[-1].text)
+        monitory_pages = self.get_html(
+            'https://wishmaster.me/catalog/smartfony/')
+        count_pages = int(
+            monitory_pages.find('span', {
+                "class": "nums"
+            }).find_all('a')[-1].text)
         with multiprocessing.Pool(count_process) as p:
             for i in p.map(self.get_pages, list(range(1, count_pages + 1))):
                 monitory += i
@@ -78,14 +101,28 @@ class WishMaster:
 
     def update(self):
 
-        result = {'phones': self.get_all_from('https://wishmaster.me/catalog/smartfony/'), 'monitory': self.get_all_from('https://wishmaster.me/catalog/televizory_monitory/monitory/')}
-        json.dump(result, open('test.json', 'w', encoding='utf8'), indent=4, ensure_ascii=False)
+        result = {
+            'phones':
+            self.get_all_from('https://wishmaster.me/catalog/smartfony/'),
+            'monitory':
+            self.get_all_from(
+                'https://wishmaster.me/catalog/televizory_monitory/monitory/'),
+            'audio':
+            self.get_all_from('https://wishmaster.me/catalog/audio/'),
+            'laptop':
+            self.get_all_from('https://wishmaster.me/catalog/noutbuki/'),
+        }
+        # https://wishmaster.me/catalog/noutbuki/
+        json.dump(result,
+                  open('test.json', 'w', encoding='utf8'),
+                  indent=4,
+                  ensure_ascii=False)
         return result
 
 
 def update():
     result = WishMaster().update()
-    print(result)
+    # print(result)
     for i in result:
         db[i] = result[i]
 
